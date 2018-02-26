@@ -1,0 +1,324 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"fa",
+				"factorY\tfloat"
+			],
+			[
+				"de",
+				"desiredRoll\tfloat"
+			],
+			[
+				"pl",
+				"PlayCon\tPlayerController"
+			],
+			[
+				"Pla",
+				"PlayerController\tPlayerController"
+			],
+			[
+				"_rot",
+				"_rotTorqueCoeff\tfloat"
+			],
+			[
+				"Vec",
+				"Vector3\tVector3"
+			],
+			[
+				"_",
+				"_rotDragCoeff\tfloat"
+			],
+			[
+				"thr",
+				"thrust\tfloat"
+			],
+			[
+				"desr",
+				"desiredRollVel\tfloat"
+			],
+			[
+				"Ma",
+				"Mathf\tMathf"
+			],
+			[
+				"mea",
+				"measRoll\tfloat"
+			],
+			[
+				"torque",
+				"torqueRoll\tfloat"
+			],
+			[
+				"des",
+				"desiredZ\tfloat"
+			],
+			[
+				"for",
+				"forceXZ\tVector3"
+			],
+			[
+				"vec",
+				"Vector3\tVector3"
+			],
+			[
+				"ve",
+				"Vector3()\tVector3()"
+			],
+			[
+				"addre",
+				"AddRelativeTorque(Vector3 torque)\tvoid"
+			],
+			[
+				"Ve",
+				"Vector3\tVector3"
+			],
+			[
+				"l",
+				"Log(object message)\tvoid"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "Packages/Python/Python.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/C++/C++ Single File.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 490.0,
+		"last_filter": "pack",
+		"selected_items":
+		[
+			[
+				"pack",
+				"Package Control: Install Package"
+			],
+			[
+				"pac",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 609.0
+	},
+	"console":
+	{
+		"height": 153.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"https://www.facebook.com/events/1354247184630574/?acontext=%7B%22ref%22%3A%2229%22%2C%22ref_notif_type%22%3A%22event_joined_nearby%22%2C%22action_history%22%3A%22null%22%7D"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Python27/Lib/distutils/distutils.cfg",
+		"/C/Users/matteoPC/Desktop/Wrap test/Attempt_2/hello.cpp",
+		"/C/MinGW/lib/gcc/mingw32/6.3.0/include/c++/math.h",
+		"/C/MinGW/lib/gcc/mingw32/6.3.0/include/c++/cmath",
+		"/C/Users/matteoPC/Documents/GitHub/MT SDK/Examples/xda_c_cpp/console.cpp",
+		"/C/Users/matteoPC/Documents/GitHub/symbiotic/Symbody/libs/Xsens/include/xsens/xscontrol.h",
+		"/C/Users/matteoPC/Anaconda2/envs/wrapping/Lib/distutils/distutils.cfg",
+		"/C/Users/matteoPC/Desktop/Wrap test/Attempt_2/_swigdemo_module.cc",
+		"/C/Users/matteoPC/Documents/GitHub/wrapping/example.h",
+		"/C/Users/matteoPC/Documents/GitHub/wrapping/example.py",
+		"/C/Users/matteoPC/Documents/GitHub/wrapping/example.i",
+		"/C/Users/matteoPC/Documents/GitHub/wrapping/example.c",
+		"/D/Matteo/Learning Unity/Quad_1_1/Assets/ScriptsNew Folder/PlayerController.cs",
+		"/D/Matteo/Learning Unity/Quad_1_1/Assets/PIDController.cs",
+		"/C/Users/matteoPC/Documents/GitHub/Python_Interface_Cpp/swig/fibonacci/setup.py",
+		"/C/Users/matteoPC/Desktop/get-pip.py",
+		"/C/Users/matteoPC/Evernote/Databases/Attachments/example.c",
+		"/C/Users/matteoPC/Documents/GitHub/wrapping/setup_example.py",
+		"/C/Users/matteoPC/Documents/GitHub/wrapping_sip/configure.py",
+		"/C/Users/matteoPC/Documents/GitHub/wrapping_sip/example.sip",
+		"/C/ProgramData/Anaconda3/Lib/pathlib.py",
+		"/C/ProgramData/Anaconda3/libs/python36.lib",
+		"/C/ProgramData/Anaconda3/include/Python.h",
+		"/D/GoogleDrive/Unity3D/flyexp_5_4_3/Assets/Scripts/pathPlanning.cs",
+		"/C/Users/matteoPC/Documents/GitHub/wrapping/_example_module.cc",
+		"/D/GoogleDrive/Unity3D/flyexp_5_4_3/Assets/Scripts/TrajectoryManagement.cs",
+		"/C/Users/matteoPC/AppData/Roaming/Sublime Text 3/Packages/Unity Shader/UnityShader.sublime-settings",
+		"/D/Matteo/Learning Unity/Quad_1_1/Quad_1_1.sublime-project",
+		"/D/Matteo/Learning Unity/Roll a Ball/Roll a Ball/Assets/Scripts/PlayerController.cs",
+		"/C/Users/matte/Google Drive/CERN/TE-MSC-SCD/Work Folder/Software/CODE/Certificate analysis (HI-LUMI)/CERT_GUI (1).m"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"::hyp",
+			"hypot",
+			"::hypot",
+			"rotSpeed"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 118.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.variable_get":
+	{
+		"height": 222.0
+	},
+	"pinned_build_system": "",
+	"project": "Quad_1_1.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 274.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
