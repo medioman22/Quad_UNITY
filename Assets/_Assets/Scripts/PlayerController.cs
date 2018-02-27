@@ -3,7 +3,6 @@ using System.Linq;
 
 public class PlayerController : MonoBehaviour
 {
-
     private UDPCommunication udp;
 
     private Rigidbody rb;
@@ -11,14 +10,13 @@ public class PlayerController : MonoBehaviour
 
     public const int N_PROPELLERS = 4;
 
+    public static bool DataFromUDP = false;
+
     public float _speed;
 
     private int _count;
-    // private UDPSend udp_send;
 
-    // private CommandsManager Comm;
-
-    public float[] table  = new float[5];
+    public float[] table = new float[5];
 
     public float[] rotSpeed  =  { 1.0f, -1.0f, 1.0f, -1.0f };
     private float[] rotDirection  =  { 1.0f, -1.0f, 1.0f, -1.0f };
@@ -42,51 +40,66 @@ public class PlayerController : MonoBehaviour
     public float desiredY = 0.0f;
     public float desiredYaw = 0.0f;
     
+    private float time_start = 0.0f;
+    private float time_diff = 0.0f;
+    private float time_new = 0.0f;
 
     // Use this for initialization
     void Start ()
     {
+        time_start = Time.realtimeSinceStartup;
+
+        time_diff = 0.0f;
+
         rb = GetComponent<Rigidbody>();
 
         propellerDistance = Vector3.Magnitude(_propellers[1].transform.position - transform.position);
 
-        // _propellers = new GameObject[N_PROPELLERS];
+        // Connect UDP
 
-        if ((udp == null) && (GameObject.Find("GameController").gameObject.GetComponent<UDPCommunication>() != null))
+        if (DataFromUDP)
         {
-            udp = GameObject.Find("GameController").gameObject.GetComponent<UDPCommunication>();
+            if ((udp == null) && (GameObject.Find("GameController").gameObject.GetComponent<UDPCommunication>() != null))
+            {
+                udp = GameObject.Find("GameController").gameObject.GetComponent<UDPCommunication>();
+            }
+            else
+            {
+                Debug.LogWarning("Missing UDPSend component. Please add one");
+            }
         }
-        else
-        {
-            Debug.LogWarning("Missing UDPSend component. Please add one");
-        }
-
 
     }
 
     // FixedUpdate is called right before Update
     void FixedUpdate()
     {
+        time_new = Time.realtimeSinceStartup;
+
+        time_diff = time_new - time_start;
+
+        print(time_diff);
+
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveLateral = Input.GetAxis("Vertical");
 
         // fictional movement control
 
-        var movement = new Vector3 (moveHorizontal, 0.0f, moveLateral);
+        //var movement = new Vector3(moveHorizontal, 0.0f, moveLateral);
 
-        // rb.AddForce(movement * _speed);
-        
+        //rb.AddForce(movement * _speed);
+
         // here we add the torques
 
         // scaling vector
         rotTorque = rotSpeed.Select(n => n * _rotTorqueCoeff).ToArray();
 
         // on y
-        var torqueY = new Vector3(0.0f, rotTorque.Sum() , 0.0f);
-        var torqueYAligned = transform.rotation*torqueY;
-        rb.AddRelativeTorque (torqueYAligned);
+        var torqueY = new Vector3(0.0f, rotTorque.Sum(), 0.0f);
+        var torqueYAligned = transform.rotation * torqueY;
+        rb.AddRelativeTorque(torqueYAligned);
 
-        
+
         // here we add the forces
         for (int i = 0; i < rotSpeedAbs.Length; i++)
         {
@@ -102,14 +115,14 @@ public class PlayerController : MonoBehaviour
         var torqueXZ = new Vector3[4];
 
         // on x and z
-        for (int i=0; i<4; i++)
-        {  
+        for (int i = 0; i < 4; i++)
+        {
             // Debug.Log(_propellers[i].transform.position);
             // Debug.Log(transform.position);
 
             forceXZ.y = rotDrag[i];
 
-            forceXZAligned = transform.rotation*forceXZ;
+            forceXZAligned = transform.rotation * forceXZ;
             // Debug.Log(transform.rotation);
 
             lever = -(_propellers[i].transform.position - transform.position);
@@ -137,24 +150,30 @@ public class PlayerController : MonoBehaviour
 
         totalForce.y = rotDrag.Sum();
 
-         //Debug.Log(totalForce);
-         //Debug.Log(_propellers);
+        //Debug.Log(totalForce);
+        //Debug.Log(_propellers);
 
-        var  totalForceAligned = transform.rotation*totalForce;
+        var totalForceAligned = transform.rotation * totalForce;
         rb.AddForce(totalForceAligned);
 
 
-        //desiredPitch = Input.GetAxis ("Vertical");
-        //desiredRoll = Input.GetAxis ("Horizontal");
-        //desiredY = Input.GetAxis ("Up");
-        //desiredYaw = Input.GetAxis ("Yaw");
+        if (DataFromUDP)
+        {
+            Debug.LogWarning("UDP?");
+            var controls = udp.controls;
 
-        var controls = udp.controls;
-
-        desiredPitch = controls[0];
-        desiredRoll = controls[1];
-        desiredYaw = controls[2];
-        desiredY = controls[3];
+            desiredPitch = controls[0];
+            desiredRoll = controls[1];
+            desiredYaw = controls[2];
+            desiredY = controls[3];
+        }
+        else
+        {
+            desiredPitch = Input.GetAxis("Vertical");
+            desiredRoll = Input.GetAxis("Horizontal");
+            desiredY = Input.GetAxis("Up");
+            desiredYaw = Input.GetAxis("Yaw");
+        }
 
         print("Pitch = " + desiredPitch);
         print("Roll = " + desiredRoll);
@@ -166,7 +185,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
         
     }
 }

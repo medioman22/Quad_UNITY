@@ -17,13 +17,17 @@ public class UDPCommunication : MonoBehaviour
     Int32 count = 0;
     public float[] controls = new float[4];
 
-    float time_start = Time.realtimeSinceStartup;
-
+    float time_start = 0.0f;
     float time_diff = 0.0f;
+    float time_new = 0.0f;
 
     // Use this for initialization
     void Start()
     {
+        time_start = Time.realtimeSinceStartup;
+
+        time_diff = 0.0f;
+
         if ((udp == null) && (GetComponent<UDPSend>() != null))
         {
             udp = GetComponent<UDPSend>();
@@ -40,38 +44,40 @@ public class UDPCommunication : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        float time_new = Time.realtimeSinceStartup;
+        if (PlayerController.DataFromUDP)
+        {
+            time_new = Time.realtimeSinceStartup;
 
-        time_diff = time_new - time_start;
+            time_diff = time_new - time_start;
 
-        //print(time_diff);
+            print(time_diff);
 
-        time_start = time_new;
+            time_start = time_new;
 
-        // Send data
-        
-        udp.sendString(message);
-        //print("sent " + "\"" + message + "\"");// + " to " + IP + " : " + port);
+            // Send data
 
-        // Receive data
+            udp.sendString(message);
+            //print("sent " + "\"" + message + "\"");// + " to " + IP + " : " + port);
 
-        controls[0] = 0.0f;
-        controls[1] = 0.0f;
-        controls[2] = 0.0f;
-        controls[3] = 0.0f;
-        controls = udp.receiveString();
+            // Receive data
 
-        //print("received \"" + controls + "\" from ");// + remoteEndPoint.ToString());
+            controls[0] = 0.0f;
+            controls[1] = 0.0f;
+            controls[2] = 0.0f;
+            controls[3] = 0.0f;
+            controls = udp.receiveString();
 
-        //foreach (var i in str)
-        //{
-        //    Debug.Log(i);
-        //}
-        //print("");
+            //print("received \"" + controls + "\" from ");// + remoteEndPoint.ToString());
 
-        count++;
-        //print(count);
+            //foreach (var i in str)
+            //{
+            //    Debug.Log(i);
+            //}
+            //print("");
+
+            count++;
+            //print(count);
+        }
     }
 
     private void run_cmd()

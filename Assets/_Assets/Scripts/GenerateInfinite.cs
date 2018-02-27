@@ -28,6 +28,7 @@ public class GenerateInfinite : MonoBehaviour
 
     Hashtable tiles = new Hashtable();
 
+    float updateTime;
 
     // Use this for initialization
     void Start()
@@ -35,7 +36,7 @@ public class GenerateInfinite : MonoBehaviour
         this.gameObject.transform.position = Vector3.zero;
         startPos = Vector3.zero;
 
-        float updateTime = Time.realtimeSinceStartup;
+        updateTime = Time.realtimeSinceStartup;
 
         for (int x = -tileNumberX; x < tileNumberX; x++)
         {
@@ -67,7 +68,7 @@ public class GenerateInfinite : MonoBehaviour
 
         if (Mathf.Abs(xMove) >= planeSize || Mathf.Abs(zMove) >= planeSize)
         {
-            float updateTime = Time.realtimeSinceStartup;
+            updateTime = Time.realtimeSinceStartup;
 
             //force integer and round to nearest tile
             int playerX = (int)(Mathf.Floor(player.transform.position.x / planeSize) * planeSize);

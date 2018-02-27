@@ -70,11 +70,10 @@ public class PIDController : MonoBehaviour {
 
     public Quaternion rotation = Quaternion.identity;
 
-
     private PlayerController PlayCon;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         PlayCon = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
 
@@ -157,10 +156,10 @@ public class PIDController : MonoBehaviour {
         var rot3 = (thrustCoeff + torqueRollCoeff - torquePitchCoeff + torqueYawCoeff);
         var rot4 = (thrustCoeff + torqueRollCoeff + torquePitchCoeff - torqueYawCoeff);
 
-        //PlayCon.rotSpeed[0]  = Mathf.Sqrt(Mathf.Abs(rot1))*Mathf.Sign(rot1);
-        //PlayCon.rotSpeed[1]  = -Mathf.Sqrt(Mathf.Abs(rot2))*Mathf.Sign(rot2);
-        //PlayCon.rotSpeed[2]  = Mathf.Sqrt(Mathf.Abs(rot3))*Mathf.Sign(rot3);
-        //PlayCon.rotSpeed[3]  = -Mathf.Sqrt(Mathf.Abs(rot4))*Mathf.Sign(rot4);
+        //PlayCon.rotSpeed[0] = Mathf.Sqrt(Mathf.Abs(rot1)) * Mathf.Sign(rot1);
+        //PlayCon.rotSpeed[1] = -Mathf.Sqrt(Mathf.Abs(rot2)) * Mathf.Sign(rot2);
+        //PlayCon.rotSpeed[2] = Mathf.Sqrt(Mathf.Abs(rot3)) * Mathf.Sign(rot3);
+        //PlayCon.rotSpeed[3] = -Mathf.Sqrt(Mathf.Abs(rot4)) * Mathf.Sign(rot4);
 
         rb.transform.eulerAngles = new Vector3(desiredPitch, desiredYaw, desiredRoll);
 
@@ -169,14 +168,14 @@ public class PIDController : MonoBehaviour {
         //print(Mathf.Cos(measRoll));
         //print(thrust);
 
-        // Debug.Log(measRoll);
-        // Debug.Log((torqueRoll));
+        //Debug.Log(measRoll);
+        //Debug.Log((torqueRoll));
 
-        // Debug.Log(PlayCon._rotDragCoeff);
-        // Debug.Log(thrust/(4.0f*PlayCon._rotDragCoeff));
-        // Debug.Log(rotSpeed[1]);
-        // Debug.Log(rotSpeed[2]);
-        // Debug.Log(rotSpeed[3]);
+        //Debug.Log(PlayCon._rotDragCoeff);
+        //Debug.Log(thrust / (4.0f * PlayCon._rotDragCoeff));
+        //Debug.Log(rotSpeed[1]);
+        //Debug.Log(rotSpeed[2]);
+        //Debug.Log(rotSpeed[3]);
 
         if (float.IsNaN(PlayCon.rotSpeed[0]))
         {
