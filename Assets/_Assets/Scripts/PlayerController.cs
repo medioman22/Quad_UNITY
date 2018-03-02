@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
     public float desiredRoll = 0.0f;
     public float desiredPitch = 0.0f;
     public float desiredY = 0.0f;
-    public float desiredYaw = 0.0f;
+    public float desiredYaw = 90.0f;
 
     public float desiredRollVel = 0.0f;
     public float desiredPitchVel = 0.0f;
@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
     public float desiredYawVel = 0.0f;
     
     private float time_start = 0.0f;
-    private float time_diff = 0.0f;
+    public float time_diff = 0.0f;
     private float time_new = 0.0f;
     private float time_new_start = 0.0f;
 
@@ -88,8 +88,10 @@ public class PlayerController : MonoBehaviour
 
         time_new_start = Time.realtimeSinceStartup;
 
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveLateral = Input.GetAxis("Vertical");
+        /////
+
+        // float moveHorizontal = Input.GetAxis("Horizontal");
+        // float moveLateral = Input.GetAxis("Vertical");
 
         // fictional movement control
 
@@ -97,15 +99,18 @@ public class PlayerController : MonoBehaviour
 
         //rb.AddForce(movement * _speed);
 
-        // here we add the torques
+        /////
+
+        ////////// here we add the torques
 
         // scaling vector
-        rotTorque = rotSpeed.Select(n => n * _rotTorqueCoeff).ToArray();
+        // rotTorque = rotSpeed.Select(n => Mathf.Sign(n) * n * n * _rotTorqueCoeff).ToArray();
+        rotTorque = rotSpeed.Select(n =>  n * _rotTorqueCoeff).ToArray();
 
         // on y
         var torqueY = new Vector3(0.0f, rotTorque.Sum(), 0.0f);
         var torqueYAligned = transform.rotation * torqueY;
-        rb.AddRelativeTorque(torqueYAligned);
+        rb.AddRelativeTorque(torqueY);
 
 
         // here we add the forces
@@ -117,52 +122,6 @@ public class PlayerController : MonoBehaviour
         rotDrag = rotSpeedAbs.Select(n => n * _rotDragCoeff).ToArray();
 
 
-        var lever = new Vector3();
-        var forceXZ = new Vector3();
-        var forceXZAligned = new Vector3();
-        var torqueXZ = new Vector3[4];
-
-        // on x and z
-        for (int i = 0; i < 4; i++)
-        {
-            // Debug.Log(_propellers[i].transform.position);
-            // Debug.Log(transform.position);
-
-            forceXZ.y = rotDrag[i];
-
-            forceXZAligned = transform.rotation * forceXZ;
-            // Debug.Log(transform.rotation);
-
-            lever = -(_propellers[i].transform.position - transform.position);
-
-            // Debug.Log(forceXZ);
-
-            torqueXZ[i] = Vector3.Cross(forceXZAligned, lever);
-
-            // if(i==0)
-            // {
-            //     Debug.Log(i);
-            //     Debug.Log(rotSpeed[i]);
-            //     Debug.Log(rotSpeedAbs[i]);
-            //     Debug.Log(rotDrag[i]);
-            //     Debug.Log(transform.rotation);
-            //     Debug.Log(forceXZAligned);
-            //     Debug.Log(lever);
-            //     Debug.Log(torqueXZ[i]);
-            // }        
-
-            rb.AddRelativeTorque(torqueXZ[i]);
-        }
-
-        var direction = new Vector3[4];
-
-        totalForce.y = rotDrag.Sum();
-
-        //Debug.Log(totalForce);
-        //Debug.Log(_propellers);
-
-        var totalForceAligned = transform.rotation * totalForce;
-        rb.AddForce(totalForceAligned);
 
 
         if (DataFromUDP)
@@ -177,7 +136,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            float max_m_per_s = 100;
+            float max_m_per_s = 10;
             float max_yaw_per_s = 100;
             float mul_factor = 20.0f;
             desiredPitch = Input.GetAxis("Vertical") * mul_factor;
@@ -188,11 +147,48 @@ public class PlayerController : MonoBehaviour
 
         if (DebugMode)
         {
-            print("Pitch = " + desiredPitch);
-            print("Roll = " + desiredRoll);
-            print("Yaw = " + desiredYaw);
-            print("Y = " + desiredY);
-            print(time_diff);
+            var pos = transform.position;
+
+            print(" ");
+            print("----- START PlayerController DEBUG -----");
+            print(" ");
+
+            print("time interval = " + time_diff);
+            print("position = " + pos);
+            // print("total force = " + totalForceAligned);
+            print("torqueY = " + torqueY);
+            print("torqueYAligned = " + torqueYAligned);
+    }
+        // on x and z
+        var lever = new Vector3();
+        var forceXZ = new Vector3();
+        var forceXZAligned = new Vector3();
+        var torqueXZ = new Vector3[4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            forceXZ.y = rotDrag[i];
+            forceXZAligned = transform.rotation * forceXZ;
+
+            var prop_pos = _propellers[i].transform.position;
+
+            rb.AddForceAtPosition(forceXZAligned, prop_pos);
+                
+        if (DebugMode)
+        {
+            // if (i==0){
+                        print("----- START propeller DEBUG -----");
+                        
+                        print("propereller number = " + i);
+                        // print("rotSpeed = " + rotSpeed[i].ToString("F2"));
+                        // print("rotSpeedAbs = " + rotSpeedAbs[i].ToString("F2"));
+                        // print("rotDrag = " + rotDrag[i].ToString("F2"));
+                        // print("body rotation = " + transform.eulerAngles);
+                        // print("forceXZ = " + forceXZ);
+                        print("forceXZAligned = " + forceXZAligned);
+                        print("propeller position = " + prop_pos.ToString("F2"));}
+        // }
+
         }
     }
 
