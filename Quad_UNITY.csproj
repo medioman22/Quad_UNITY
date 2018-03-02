@@ -75,12 +75,15 @@
     <Compile Include="Assets\_Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\_Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\_Assets\Scripts\GenerateInfinite.cs" />
+    <Compile Include="Assets\_Assets\Scripts\GeneratePath.cs" />
     <Compile Include="Assets\_Assets\Scripts\GenerateTerrain.cs" />
+    <Compile Include="Assets\_Assets\Scripts\GenerateTube.cs" />
     <Compile Include="Assets\_Assets\Scripts\PIDController.cs" />
     <Compile Include="Assets\_Assets\Scripts\PIDController_Alternative.cs" />
     <Compile Include="Assets\_Assets\Scripts\Parameters.cs" />
     <Compile Include="Assets\_Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\_Assets\Scripts\PlayerController_Alternative.cs" />
+    <Compile Include="Assets\_Assets\Scripts\Triangle.cs" />
     <Compile Include="Assets\_Assets\Scripts\UDPCommunication.cs" />
     <Compile Include="Assets\_Assets\Scripts\UDPSend.cs" />
   </ItemGroup>
