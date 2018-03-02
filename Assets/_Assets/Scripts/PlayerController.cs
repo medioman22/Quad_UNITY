@@ -3,6 +3,8 @@ using System.Linq;
 
 public class PlayerController : MonoBehaviour
 {
+    public bool DebugMode = false;
+
     private UDPCommunication udp;
 
     private Rigidbody rb;
@@ -39,15 +41,22 @@ public class PlayerController : MonoBehaviour
     public float desiredPitch = 0.0f;
     public float desiredY = 0.0f;
     public float desiredYaw = 0.0f;
+
+    public float desiredRollVel = 0.0f;
+    public float desiredPitchVel = 0.0f;
+    public float desiredYVel = 0.0f;
+    public float desiredYawVel = 0.0f;
     
     private float time_start = 0.0f;
     private float time_diff = 0.0f;
     private float time_new = 0.0f;
+    private float time_new_start = 0.0f;
 
     // Use this for initialization
     void Start ()
     {
         time_start = Time.realtimeSinceStartup;
+        time_new_start = Time.realtimeSinceStartup;
 
         time_diff = 0.0f;
 
@@ -68,7 +77,6 @@ public class PlayerController : MonoBehaviour
                 Debug.LogWarning("Missing UDPSend component. Please add one");
             }
         }
-
     }
 
     // FixedUpdate is called right before Update
@@ -76,9 +84,9 @@ public class PlayerController : MonoBehaviour
     {
         time_new = Time.realtimeSinceStartup;
 
-        time_diff = time_new - time_start;
+        time_diff = time_new - time_new_start;
 
-        print(time_diff);
+        time_new_start = Time.realtimeSinceStartup;
 
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveLateral = Input.GetAxis("Vertical");
@@ -169,22 +177,27 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            desiredPitch = Input.GetAxis("Vertical");
-            desiredRoll = Input.GetAxis("Horizontal");
-            desiredY = Input.GetAxis("Up");
-            desiredYaw = Input.GetAxis("Yaw");
+            float max_m_per_s = 100;
+            float max_yaw_per_s = 100;
+            float mul_factor = 20.0f;
+            desiredPitch = Input.GetAxis("Vertical") * mul_factor;
+            desiredRoll = -Input.GetAxis("Horizontal") * mul_factor;
+            desiredY = desiredY + Input.GetAxis("Up") * max_m_per_s * time_diff;
+            desiredYaw = desiredYaw + Input.GetAxis("Yaw") * max_yaw_per_s * time_diff;
         }
 
-        print("Pitch = " + desiredPitch);
-        print("Roll = " + desiredRoll);
-        print("Yaw = " + desiredYaw);
-        print("Y = " + desiredY);
-
+        if (DebugMode)
+        {
+            print("Pitch = " + desiredPitch);
+            print("Roll = " + desiredRoll);
+            print("Yaw = " + desiredYaw);
+            print("Y = " + desiredY);
+            print(time_diff);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 }

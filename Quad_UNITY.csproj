@@ -77,8 +77,10 @@
     <Compile Include="Assets\_Assets\Scripts\GenerateInfinite.cs" />
     <Compile Include="Assets\_Assets\Scripts\GenerateTerrain.cs" />
     <Compile Include="Assets\_Assets\Scripts\PIDController.cs" />
+    <Compile Include="Assets\_Assets\Scripts\PIDController_Alternative.cs" />
     <Compile Include="Assets\_Assets\Scripts\Parameters.cs" />
     <Compile Include="Assets\_Assets\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\_Assets\Scripts\PlayerController_Alternative.cs" />
     <Compile Include="Assets\_Assets\Scripts\UDPCommunication.cs" />
     <Compile Include="Assets\_Assets\Scripts\UDPSend.cs" />
   </ItemGroup>
