@@ -3,6 +3,8 @@
 
 public class PIDController : MonoBehaviour {
 
+    public bool DebugMode = false;
+    public bool UseQuaternions = false;
     public const int N_PROPELLERS = 4;
 
     private Rigidbody rb;
@@ -60,7 +62,7 @@ public class PIDController : MonoBehaviour {
     public float desiredPitch = 0.0f;
     public float desiredPitchVel = 0.0f;
 
-    public float desiredYaw = 0.0f;
+    public float desiredYaw = 90.0f;
     public float desiredYawVel = 0.0f;
 
     public float propellerDistance = 0.0f;
@@ -68,13 +70,32 @@ public class PIDController : MonoBehaviour {
     public float standardY = 0.0f;
     public float factorY = 1.0f;
 
-    public Quaternion rotation = Quaternion.identity;
+    private float measYOld;
+    private float measRollOld;
+    private float measPitchOld;
+    private float measYawOld;
 
+    private float measAccumRoll;
+    private float measAccumPitch;
+    private float measAccumYaw;
+
+    private float desiredYOld;
+    private float desiredRollOld;
+    private float desiredPitchOld;
+    private float desiredYawOld;
+
+    private float desiredAccumRoll;
+    private float desiredAccumPitch;
+    private float desiredAccumYaw;
+
+
+
+    public Quaternion rotation = Quaternion.identity;
 
     private PlayerController PlayCon;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         PlayCon = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
 
@@ -95,94 +116,153 @@ public class PIDController : MonoBehaviour {
     {
         desiredRoll = PlayCon.desiredRoll;
         desiredPitch = PlayCon.desiredPitch;
-        desiredY = standardY + factorY*PlayCon.desiredY;
+        desiredY = PlayCon.desiredY + standardY;
         desiredYaw = PlayCon.desiredYaw;
+
+        desiredRollVel = PlayCon.desiredRollVel;
+        desiredPitchVel = PlayCon.desiredPitchVel;
+        desiredYVel = PlayCon.desiredYVel;
+        desiredYawVel = PlayCon.desiredYawVel;
 
         var measY = transform.position.y;
     	var measYVel = rb.velocity.y;
 
-     //   var measRoll = transform.eulerAngles.z;
-     //   var measRollVel = rb.angularVelocity.z;
-    	//var measPitch = transform.eulerAngles.x;
-    	//var measPitchVel = rb.angularVelocity.x;
-    	//var measYaw = transform.eulerAngles.y;
-    	//var measYawVel = rb.angularVelocity.y;
-
-        //print(transform.eulerAngles.z);
-        //print(transform.eulerAngles.x);
-        //print(transform.eulerAngles.y);
-
         rotation = transform.rotation;
 
-        var measRoll = rotation.eulerAngles.z;
-        var measRollVel = rb.angularVelocity.z;
-        var measPitch = rotation.eulerAngles.x;
-        var measPitchVel = rb.angularVelocity.x;
-        var measYaw = rotation.eulerAngles.y;
-        var measYawVel = rb.angularVelocity.y;
-
-        // correct rotation errors : -180 to +180
-
-        if (measRoll>180.0)
+        if (UseQuaternions)
         {
-            measRoll = measRoll - (float)360.0;
-        }
 
-        if (measPitch > 180.0)
+        }
+        else
         {
-            measPitch = measPitch - (float)360.0;
+            var measRoll = rotation.eulerAngles.z;
+            var measRollVel = rb.angularVelocity.z;
+            var measPitch = rotation.eulerAngles.x;
+            var measPitchVel = rb.angularVelocity.x;
+            var measYaw = rotation.eulerAngles.y;
+            var measYawVel = rb.angularVelocity.y;
+
+            var measRollRad = measRoll * (float)Mathf.PI / (float)180.0;
+            var measPitchRad = measPitch * (float)Mathf.PI / (float)180.0;
+            var measYawRad = measYaw * (float)Mathf.PI / (float)180.0;
+
+            FixAngles(ref desiredYaw, ref desiredYawOld, ref desiredAccumYaw);
+            FixAngles(ref desiredPitch, ref desiredPitchOld, ref desiredAccumPitch);
+            FixAngles(ref desiredRoll, ref desiredRollOld, ref desiredAccumRoll);
+
+
+            FixAngles(ref measYaw, ref measYawOld, ref measAccumYaw);
+            FixAngles(ref measPitch, ref measPitchOld, ref measAccumPitch);
+            FixAngles(ref measRoll, ref measRollOld, ref measAccumRoll);
+
+            var YErr = desiredY - measY;
+            var YErrOld = desiredYOld - measYOld;
+
+            var YVelErr = (YErr - YErrOld)/PlayCon.time_diff;
+
+            var RollErr = desiredRoll - measRoll;
+            var RollErrOld = desiredRollOld - measRollOld;
+
+            var RollVelErr = (RollErr - RollErrOld)/PlayCon.time_diff;
+
+            var YawErr = desiredYaw - measYaw;
+            var YawErrOld = desiredYawOld - measYawOld;
+
+            var YawVelErr = (YawErr - YawErrOld)/PlayCon.time_diff;
+
+            var PitchErr = desiredPitch - measPitch;
+            var PitchErrOld = desiredPitchOld - measPitchOld;
+
+            var PitchVelErr = (PitchErr - PitchErrOld)/PlayCon.time_diff;
+    
+            desiredYOld = desiredY;
+            measYOld = measY;
+            desiredRollOld = desiredRoll;
+            measRollOld = measRoll;
+            desiredPitchOld = desiredPitch;
+            measPitchOld = measPitch;
+            desiredYawOld = desiredYaw;
+            measYawOld = measYaw;
+
+            thrust = (KzD*(YVelErr) + KzP*(YErr))*mass/(Mathf.Cos(measRollRad) *Mathf.Cos(measPitchRad));
+        	torqueRoll = (KrollD*(RollVelErr) + KrollP*(RollErr))*Ixx;
+        	torquePitch = (KpitchD*(PitchVelErr) + KpitchP*(PitchErr))*Izz;
+        	torqueYaw = (KyawD*(YawVelErr) + KyawP*(YawErr))*Iyy;
+
+            var thrustCoeff = thrust / (4.0f * PlayCon._rotDragCoeff);
+            var torqueRollCoeff = torqueRoll / (2.0f * PlayCon._rotDragCoeff * PlayCon.propellerDistance);
+            var torquePitchCoeff = torquePitch / (2.0f * PlayCon._rotDragCoeff * PlayCon.propellerDistance);
+            var torqueYawCoeff = torqueYaw / (4.0f * PlayCon._rotTorqueCoeff);
+
+            var rot1 = (thrustCoeff - torqueRollCoeff + torquePitchCoeff + torqueYawCoeff);
+            var rot2 = (thrustCoeff - torqueRollCoeff - torquePitchCoeff - torqueYawCoeff);
+            var rot3 = (thrustCoeff + torqueRollCoeff - torquePitchCoeff + torqueYawCoeff);
+            var rot4 = (thrustCoeff + torqueRollCoeff + torquePitchCoeff - torqueYawCoeff);
+
+            PlayCon.rotSpeed[0] = Mathf.Sqrt(Mathf.Abs(rot1)) * Mathf.Sign(rot1);
+            PlayCon.rotSpeed[1] = -Mathf.Sqrt(Mathf.Abs(rot2)) * Mathf.Sign(rot2);
+            PlayCon.rotSpeed[2] = Mathf.Sqrt(Mathf.Abs(rot3)) * Mathf.Sign(rot3);
+            PlayCon.rotSpeed[3] = -Mathf.Sqrt(Mathf.Abs(rot4)) * Mathf.Sign(rot4);
+
+            if(DebugMode)
+            {
+                print(" ");
+                print("----- START PID DEBUG -----");
+                print(" ");
+
+                print("err = " + YErr.ToString("F2") +
+                      " " + RollErr.ToString("F2") + 
+                      " " + PitchErr.ToString("F2") + 
+                      " " + YawErr.ToString("F2"));
+
+                print("err velocity = " + YVelErr.ToString("F2") + 
+                      " " + RollVelErr.ToString("F2") + 
+                      " " + PitchVelErr.ToString("F2") + 
+                      " " + YawVelErr.ToString("F2"));
+
+                print("thrustCoeff = " + thrustCoeff.ToString("F2") + 
+                      " torqueRollCoeff = " + torqueRollCoeff.ToString("F2") + 
+                      " torquePitchCoeff = " + torquePitchCoeff.ToString("F2") + 
+                      " torqueYawCoeff " + torqueYawCoeff.ToString("F2"));
+
+                print("rotation speed = " + PlayCon.rotSpeed[0].ToString("F2") + 
+                      " " + PlayCon.rotSpeed[1].ToString("F2") + 
+                      " " + PlayCon.rotSpeed[2].ToString("F2") + 
+                      " " + PlayCon.rotSpeed[3].ToString("F2"));
+            }
         }
-
-        if (measYaw > 180.0)
-        {
-            measYaw = measYaw - (float)360.0;
-        }
-
-        var measRollRad = measRoll * (float)Mathf.PI / (float)180.0;
-        var measPitchRad = measPitch * (float)Mathf.PI / (float)180.0;
-        var measYawRad = measYaw * (float)Mathf.PI / (float)180.0;
-
-        thrust = (gravity + KzD*(desiredYVel - measYVel) + KzP*(desiredY - measY))*mass/(Mathf.Cos(measRollRad) *Mathf.Cos(measPitchRad));
-    	torqueRoll = (KrollD*(desiredRollVel - measRollVel) + KrollP*(desiredRoll - measRoll))*Ixx;
-    	torquePitch = (KpitchD*(desiredPitchVel - measPitchVel) + KpitchP*(desiredPitch - measPitch))*Izz;
-    	torqueYaw = (KyawD*(desiredYawVel - measYawVel) + KyawP*(desiredYaw - measYaw))*Iyy;
-
-        var thrustCoeff = thrust/(4.0f*PlayCon._rotDragCoeff);
-        var torqueRollCoeff = torqueRoll/(2.0f*PlayCon._rotDragCoeff*PlayCon.propellerDistance);
-        var torquePitchCoeff = torquePitch/(2.0f*PlayCon._rotDragCoeff*PlayCon.propellerDistance);
-        var torqueYawCoeff = torqueYaw/(4.0f*PlayCon._rotTorqueCoeff);
-
-        var rot1 = (thrustCoeff - torqueRollCoeff + torquePitchCoeff + torqueYawCoeff);
-        var rot2 = (thrustCoeff - torqueRollCoeff - torquePitchCoeff - torqueYawCoeff);
-        var rot3 = (thrustCoeff + torqueRollCoeff - torquePitchCoeff + torqueYawCoeff);
-        var rot4 = (thrustCoeff + torqueRollCoeff + torquePitchCoeff - torqueYawCoeff);
-
-        //PlayCon.rotSpeed[0]  = Mathf.Sqrt(Mathf.Abs(rot1))*Mathf.Sign(rot1);
-        //PlayCon.rotSpeed[1]  = -Mathf.Sqrt(Mathf.Abs(rot2))*Mathf.Sign(rot2);
-        //PlayCon.rotSpeed[2]  = Mathf.Sqrt(Mathf.Abs(rot3))*Mathf.Sign(rot3);
-        //PlayCon.rotSpeed[3]  = -Mathf.Sqrt(Mathf.Abs(rot4))*Mathf.Sign(rot4);
-
-        rb.transform.eulerAngles = new Vector3(desiredPitch, desiredYaw, desiredRoll);
+        //rb.transform.eulerAngles = new Vector3(desiredPitch, desiredYaw, desiredRoll);
 
 
         //print(measRoll);
         //print(Mathf.Cos(measRoll));
         //print(thrust);
 
-        // Debug.Log(measRoll);
-        // Debug.Log((torqueRoll));
+        //Debug.Log(measRoll);
+        //Debug.Log((torqueRoll));
 
-        // Debug.Log(PlayCon._rotDragCoeff);
-        // Debug.Log(thrust/(4.0f*PlayCon._rotDragCoeff));
-        // Debug.Log(rotSpeed[1]);
-        // Debug.Log(rotSpeed[2]);
-        // Debug.Log(rotSpeed[3]);
+        //Debug.Log(PlayCon._rotDragCoeff);
+        //Debug.Log(thrust / (4.0f * PlayCon._rotDragCoeff));
+        //Debug.Log(rotSpeed[0]);
+        //Debug.Log(rotSpeed[1]);
+        //Debug.Log(rotSpeed[2]);
+        //Debug.Log(rotSpeed[3]);
+    }
 
-        if (float.IsNaN(PlayCon.rotSpeed[0]))
+    void FixAngles(ref float meas, ref float measOld, ref float measAccum)
+    {
+        if (measOld - measAccum * 360.0f - meas > 350.0f)
         {
-            Debug.Log(PlayCon.rotSpeed[0]);
+            measAccum = measAccum + 1;
+        }
+        else
+        {
+            if (measOld - measAccum * 360.0f - meas < -350.0f)
+            {
+                    measAccum = measAccum - 1;
+            }
         }
 
-
+        meas = meas + measAccum * 360.0f;
     }
 }
