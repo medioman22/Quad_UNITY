@@ -104,8 +104,8 @@ public class PlayerController : MonoBehaviour
         ////////// here we add the torques
 
         // scaling vector
-        // rotTorque = rotSpeed.Select(n => Mathf.Sign(n) * n * n * _rotTorqueCoeff).ToArray();
-        rotTorque = rotSpeed.Select(n =>  n * _rotTorqueCoeff).ToArray();
+        rotTorque = rotSpeed.Select(n => Mathf.Sign(n) * n * n * _rotTorqueCoeff).ToArray();
+        // rotTorque = rotSpeed.Select(n =>  n * _rotTorqueCoeff).ToArray();
 
         // on y
         var torqueY = new Vector3(0.0f, rotTorque.Sum(), 0.0f);
@@ -119,7 +119,7 @@ public class PlayerController : MonoBehaviour
             rotSpeedAbs[i] = rotSpeed[i] * rotDirection[i];
         }
 
-        rotDrag = rotSpeedAbs.Select(n => n * _rotDragCoeff).ToArray();
+        rotDrag = rotSpeedAbs.Select(n => Mathf.Sign(n) * n * n * _rotDragCoeff).ToArray();
 
 
 

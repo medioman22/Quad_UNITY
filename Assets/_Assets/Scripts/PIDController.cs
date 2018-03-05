@@ -184,7 +184,7 @@ public class PIDController : MonoBehaviour {
             desiredYawOld = desiredYaw;
             measYawOld = measYaw;
 
-            thrust = (KzD*(YVelErr) + KzP*(YErr));//*mass/(Mathf.Cos(measRollRad) *Mathf.Cos(measPitchRad));
+            thrust = (KzD*(YVelErr) + KzP*(YErr))*mass/(Mathf.Cos(measRollRad) *Mathf.Cos(measPitchRad));
         	torqueRoll = (KrollD*(RollVelErr) + KrollP*(RollErr))*Ixx;
         	torquePitch = (KpitchD*(PitchVelErr) + KpitchP*(PitchErr))*Izz;
         	torqueYaw = (KyawD*(YawVelErr) + KyawP*(YawErr))*Iyy;
