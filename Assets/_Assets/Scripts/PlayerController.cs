@@ -52,6 +52,8 @@ public class PlayerController : MonoBehaviour
     private float time_new = 0.0f;
     private float time_new_start = 0.0f;
 
+    private int milestoneCounter = 1;
+
     // Use this for initialization
     void Start ()
     {
@@ -174,20 +176,14 @@ public class PlayerController : MonoBehaviour
 
             rb.AddForceAtPosition(forceXZAligned, prop_pos);
                 
-        if (DebugMode)
-        {
-            // if (i==0){
-                        print("----- START propeller DEBUG -----");
-                        
-                        print("propereller number = " + i);
-                        // print("rotSpeed = " + rotSpeed[i].ToString("F2"));
-                        // print("rotSpeedAbs = " + rotSpeedAbs[i].ToString("F2"));
-                        // print("rotDrag = " + rotDrag[i].ToString("F2"));
-                        // print("body rotation = " + transform.eulerAngles);
-                        // print("forceXZ = " + forceXZ);
-                        print("forceXZAligned = " + forceXZAligned);
-                        print("propeller position = " + prop_pos.ToString("F2"));}
-        // }
+            if (DebugMode)
+            {
+                            print("----- START propeller DEBUG -----");
+                            
+                            print("propereller number = " + i);
+                            print("forceXZAligned = " + forceXZAligned);
+                            print("propeller position = " + prop_pos.ToString("F2"));
+            }
 
         }
     }
@@ -196,4 +192,23 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+
+    if (other.gameObject.CompareTag("Milestone"))
+        {
+            other.gameObject.SetActive (false);
+            print("Milestone # " + milestoneCounter++);
+            print("Crossing time = " + (Time.realtimeSinceStartup - time_start));
+            print("Crossing point = " + gameObject.transform.position);
+        }
+
+    if (other.gameObject.CompareTag("ObstacleWall"))
+        {
+            var pos = GetComponent<Renderer>().bounds.size;
+            print(pos);
+        }
+    }
+
 }
