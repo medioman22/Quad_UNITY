@@ -67,7 +67,6 @@ public class PIDController : MonoBehaviour {
 
     public float propellerDistance = 0.0f;
 
-    public float standardY = 0.0f;
     public float factorY = 1.0f;
 
     private float measYOld;
@@ -116,7 +115,7 @@ public class PIDController : MonoBehaviour {
     {
         desiredRoll = PlayCon.desiredRoll;
         desiredPitch = PlayCon.desiredPitch;
-        desiredY = PlayCon.desiredY + standardY;
+        desiredY = PlayCon.desiredY + PlayCon.standardY;
         desiredYaw = PlayCon.desiredYaw;
 
         desiredRollVel = PlayCon.desiredRollVel;
