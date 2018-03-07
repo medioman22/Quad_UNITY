@@ -91,27 +91,31 @@ public class GeneratePath : MonoBehaviour
 
         next_gameobj = no_turn;
 
+        bool skip = false;
+
         for (int j = 0; j < pathLength; j++)
         {
+
+            skip = false;
 
             int i = j % 5;
 
             // display objects
-    
+            
             var t = (GameObject)Instantiate(tube, pos, _old_rot);
                 
             var tu = (GameObject)Instantiate(next_gameobj, turnPos, rot_turn);
-
-            string tubeName = "Tube_" + i.ToString();
-            string turnName = "Turn_" + i.ToString();
-
+    
+            string tubeName = "Tube_" + j.ToString();
+            string turnName = "Turn_" + j.ToString();
+    
             t.name = tubeName;
             Tube tb = new Tube(t);
             tu.name = turnName;
             Turn tr = new Turn(tu);
-
+    
             // memo old values
-
+    
             _old_pos = pos;
             _old_rot = rot;
             _old_turn = _next_turn;
@@ -119,31 +123,59 @@ public class GeneratePath : MonoBehaviour
 
             // update new values
 
-            _next_turn = Mathf.Round(Random.Range(-0.5f, 4.5f));
-            // _next_turn = 4;
+            bool noCollisions = false;
+    
+                pos = turnPos + rot * new Vector3(0, 0, tube_d);
+    
+                turnPos = pos + rot * new Vector3(0, 0, 20);
+                
 
-            pos = turnPos + rot * new Vector3(0, 0, tube_d);
-
-            turnPos = pos + rot * new Vector3(0, 0, 20);
-
-            switch ((int)_next_turn)
+            while (!noCollisions)
             {
-                case 0:
-                    rot = rot;
-                    break;
-                case 1:
-                    rot = rot * Quaternion.AngleAxis(90, Vector3.left);
-                    break;
-                case 2:
-                    rot = rot * Quaternion.AngleAxis(90, Vector3.up);
-                    break;
-                case 3:
-                    rot = rot * Quaternion.AngleAxis(90, Vector3.right);
-                    break;
-                case 4:
-                    rot = rot * Quaternion.AngleAxis(90, Vector3.down);
-                    break;
+                _next_turn = Mathf.Round(Random.Range(-0.5f, 4.5f));
+
+                var rotNext = Quaternion.identity;
+
+                switch ((int)_next_turn)
+                {
+                    case 0:
+                        rotNext = rot;
+                        break;
+                    case 1:
+                        rotNext = rot * Quaternion.AngleAxis(90, Vector3.left);
+                        break;
+                    case 2:
+                        rotNext = rot * Quaternion.AngleAxis(90, Vector3.up);
+                        break;
+                    case 3:
+                        rotNext = rot * Quaternion.AngleAxis(90, Vector3.right);
+                        break;
+                    case 4:
+                        rotNext = rot * Quaternion.AngleAxis(90, Vector3.down);
+                        break;
+                }
+    
+                var pos_next = turnPos + rotNext * new Vector3(0, 0, tube_d);
+    
+                var turnPosNext = pos_next + rotNext * new Vector3(0, 0, 20);
+    
+                // check if collides with something
+                var hitColliders = Physics.OverlapSphere(pos_next, tube_l);
+                var hitCollidersTurn = Physics.OverlapSphere(turnPosNext, tube_l);
+                if(hitColliders.Length == 0 || hitCollidersTurn.Length == 0)
+                {
+                    noCollisions = true;
+
+                    rot = rotNext;
+                }
+                else
+                {
+                    print(" ");
+                    print("------------------------------ OVERLAP DEBUG ------------------------------");
+                    print(" ");
+                }
             }
+
                 
             rot_turn = _old_rot * Quaternion.AngleAxis(90 * (_next_turn-1) , Vector3.back);
 
