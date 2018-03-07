@@ -120,4 +120,5 @@ public class GenerateInfinite : MonoBehaviour
             startPos = player.transform.position;
         }
     }
+
 }
