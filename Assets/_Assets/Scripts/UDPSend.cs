@@ -71,7 +71,7 @@ public class UDPSend : MonoBehaviour
 
         // define
         IP = "127.0.0.1";
-        port = 27000;
+        port = 30000;
 
         // ----------------------------
         // Send
@@ -159,6 +159,21 @@ public class UDPSend : MonoBehaviour
         //var mess = System.BitConverter.ToSingle(data, 0);
 
         print(data.Length);
+
+        var mess = new float[data.Length / 4];
+        Buffer.BlockCopy(data, 0, mess, 0, data.Length);
+
+        //return System.Text.Encoding.UTF8.GetString(data, 0, data.Length);
+        return mess;
+    }
+
+    public float[] receiveAvatar()
+    {
+        var data = client.Receive(ref remoteEndPoint); // listen on port XXXXX
+
+        //var mess = System.BitConverter.ToSingle(data, 0);
+
+        //print(data.Length);
 
         var mess = new float[data.Length / 4];
         Buffer.BlockCopy(data, 0, mess, 0, data.Length);
