@@ -10,6 +10,7 @@ using System.Threading;
 
 public class UDPCommunication : MonoBehaviour
 {
+    public bool acquireUDP = true;
     public string message = "0";
 
     private UDPSend udp;
@@ -90,14 +91,26 @@ public class UDPCommunication : MonoBehaviour
             time_start = time_new;
 
             // Send data
+            if (acquireUDP)
+            {
+                string message = "r";
 
-            //udp.sendString(message);
+                udp.sendString(message);
+
+                // Receive data
+
+
+                avatar = udp.receiveAvatar();
+            }
+            else
+            {
+                string message = "q";
+
+                udp.sendString(message);
+            }
+
             //print("sent " + "\"" + message + "\"");// + " to " + IP + " : " + port);
 
-            // Receive data
-
-
-            avatar = udp.receiveAvatar();
 
             //print("received \"" + avatar + "\" from ");// + remoteEndPoint.ToString());
 

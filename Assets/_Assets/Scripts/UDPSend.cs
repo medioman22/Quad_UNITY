@@ -79,7 +79,7 @@ public class UDPSend : MonoBehaviour
         remoteEndPoint = new IPEndPoint(IPAddress.Parse(IP), port);
         client = new UdpClient(26000);
 
-        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 100);
+        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 1000);
 
 
         // status
@@ -131,7 +131,7 @@ public class UDPSend : MonoBehaviour
             // Send the message to the remote client .
             client.Send(data, data.Length, remoteEndPoint);
             //}
-            //print(data.Length);
+            print(data.Length);
         }
         catch (Exception err)
         {
