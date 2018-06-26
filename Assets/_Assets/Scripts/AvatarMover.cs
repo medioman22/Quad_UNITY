@@ -67,7 +67,7 @@ public class AvatarMover : MonoBehaviour
             corr = Quaternion.Euler(180, 0, 0);
             //Quaternion(0, 1, 0, Mathf.Cos(Mathf.PI/4));
 
-            for (int i = 1; i < rb.Length; i++)
+            for (int i = 0; i < rb.Length; i++)
             {
 
                 int torso = 8 * i;
@@ -85,26 +85,21 @@ public class AvatarMover : MonoBehaviour
                     qr[i] = Vector3.Normalize(new Vector3(udp.avatar[torso + 4], udp.avatar[torso + 5], udp.avatar[torso + 6]));
 
 
-                    try
-                    {
                         // right to left handed quaternion
                         Quaternion rot = new Quaternion(-qr[i].z, -qr[i].y, qr[i].x, udp.avatar[7]);
-                        rb[i].rotation = rot * corr;
-                    }
-                    catch (Exception e)
-                    {
-                        //Debug.LogException(e, this);
-                        print("waiting for stable skeleton data");
-                    }
+                        var fin_rot = Quaternion.identity;
+                        fin_rot = rot * corr;
 
-                    if (DebugMode && i == 6)
+                    if (DebugMode)
                     {
-                        var pos = transform.position;
 
                         Debug.Log(" ");
                         Debug.Log("----- START PlayerController DEBUG -----");
                         Debug.Log(" ");
 
+                        Debug.Log(i);
+                        Debug.Log(" ");
+                        Debug.Log(qr[i].magnitude);
                         Debug.Log("pos = " + udp.avatar[torso + 1] +
                               " " + udp.avatar[torso + 2] +
                               " " + udp.avatar[torso + 3]);
@@ -114,10 +109,19 @@ public class AvatarMover : MonoBehaviour
                               " " + rb[i].rotation.z +
                               " " + rb[i].rotation.w);
 
-                        //print(" ");
+                        print(" ");
                         Debug.Log("n = " + udp.avatar[udp.avatar.Length - 1]);
                     }
 
+                    try
+                    {
+                        rb[i].rotation = fin_rot;
+                    }
+                        catch (Exception e)
+                    {
+                        //Debug.LogException(e, this);
+                       print("waiting for stable skeleton data");
+                    }
                 }
             }
         }
