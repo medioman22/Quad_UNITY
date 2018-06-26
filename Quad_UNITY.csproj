@@ -72,6 +72,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\_Assets\Scripts\AvatarMover.cs" />
     <Compile Include="Assets\_Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\_Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\_Assets\Scripts\GenerateInfinite.cs" />

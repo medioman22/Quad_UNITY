@@ -10,12 +10,14 @@ using System.Threading;
 
 public class UDPCommunication : MonoBehaviour
 {
+    public bool acquireUDP = true;
     public string message = "0";
 
     private UDPSend udp;
 
     Int32 count = 0;
     public float[] controls = new float[4];
+    public float[] avatar = new float[169];
 
     float time_start = 0.0f;
     float time_diff = 0.0f;
@@ -76,6 +78,49 @@ public class UDPCommunication : MonoBehaviour
             //print("");
 
             count++;
+            //print(count);
+        }
+        if (AvatarMover.DataFromUDP)
+        {
+            time_new = Time.realtimeSinceStartup;
+
+            time_diff = time_new - time_start;
+
+            //print(time_diff);
+
+            time_start = time_new;
+
+            // Send data
+            if (acquireUDP)
+            {
+                string message = "r";
+
+                udp.sendString(message);
+
+                // Receive data
+
+
+                avatar = udp.receiveAvatar();
+            }
+            else
+            {
+                string message = "q";
+
+                udp.sendString(message);
+            }
+
+            //print("sent " + "\"" + message + "\"");// + " to " + IP + " : " + port);
+
+
+            //print("received \"" + avatar + "\" from ");// + remoteEndPoint.ToString());
+
+            //foreach (var i in avatar)
+            //{
+            //    Debug.Log(i);
+            //}
+            //print("");
+
+            //count++;
             //print(count);
         }
     }

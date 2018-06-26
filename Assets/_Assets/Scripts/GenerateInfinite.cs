@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 class Tile
@@ -120,4 +120,5 @@ public class GenerateInfinite : MonoBehaviour
             startPos = player.transform.position;
         }
     }
+
 }

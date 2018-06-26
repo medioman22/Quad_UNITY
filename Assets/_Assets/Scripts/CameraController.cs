@@ -9,28 +9,38 @@ public class CameraController : MonoBehaviour
 
     private Vector3 offset_init;
 
+    private Vector3 rot_init;
+    private Vector3 rot;
+
+    private Vector3 pos_init;
+    private Vector3 pos;
+
     // Use this for initialization
     void Start()
     {
         offset_init = transform.position - player.transform.position;
+
+        rot_init = player.transform.eulerAngles;
+        pos_init = player.transform.position;
     }
 
     // Update is called once per frame
     void LateUpdate()
     {    // runs AFTER all computations have been done
 
-        float rot = player.transform.eulerAngles.y;
+        rot = player.transform.eulerAngles;
+        pos = player.transform.position;
 
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, rot, transform.eulerAngles.z);
+        transform.eulerAngles = new Vector3(rot_init.x, rot.y, rot_init.z);
 
-        Vector3 offset = Quaternion.Euler(0, rot, 0) * offset_init;
+        Vector3 offset = Quaternion.Euler(transform.eulerAngles) * offset_init;
+
+        transform.position = player.transform.position + offset;
 
         if (DebugMode)
             {
                 print(offset);
                 print(rot);
             }
-
-        transform.position = player.transform.position + offset;
     }
 }

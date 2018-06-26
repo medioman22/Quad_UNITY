@@ -52,6 +52,12 @@ public class PlayerController : MonoBehaviour
     private float time_new = 0.0f;
     private float time_new_start = 0.0f;
 
+    private int milestoneCounter = 1;
+
+    private int collisionCounter = 0;
+
+    public float standardY = 0.0f;
+
     // Use this for initialization
     void Start ()
     {
@@ -153,11 +159,11 @@ public class PlayerController : MonoBehaviour
             print("----- START PlayerController DEBUG -----");
             print(" ");
 
-            print("time interval = " + time_diff);
+            // print("time interval = " + time_diff);
             print("position = " + pos);
             // print("total force = " + totalForceAligned);
-            print("torqueY = " + torqueY);
-            print("torqueYAligned = " + torqueYAligned);
+            // print("torqueY = " + torqueY);
+            // print("torqueYAligned = " + torqueYAligned);
     }
         // on x and z
         var lever = new Vector3();
@@ -174,20 +180,14 @@ public class PlayerController : MonoBehaviour
 
             rb.AddForceAtPosition(forceXZAligned, prop_pos);
                 
-        if (DebugMode)
-        {
-            // if (i==0){
-                        print("----- START propeller DEBUG -----");
-                        
-                        print("propereller number = " + i);
-                        // print("rotSpeed = " + rotSpeed[i].ToString("F2"));
-                        // print("rotSpeedAbs = " + rotSpeedAbs[i].ToString("F2"));
-                        // print("rotDrag = " + rotDrag[i].ToString("F2"));
-                        // print("body rotation = " + transform.eulerAngles);
-                        // print("forceXZ = " + forceXZ);
-                        print("forceXZAligned = " + forceXZAligned);
-                        print("propeller position = " + prop_pos.ToString("F2"));}
-        // }
+            if (DebugMode)
+            {
+                // print("----- START propeller DEBUG -----");
+                // 
+                // print("propereller number = " + i);
+                // print("forceXZAligned = " + forceXZAligned);
+                // print("propeller position = " + prop_pos.ToString("F2"));
+            }
 
         }
     }
@@ -196,4 +196,43 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+
+    if (other.gameObject.CompareTag("Milestone"))
+        {
+            other.gameObject.SetActive (false);
+            print("Milestone # " + milestoneCounter++);
+            print("Crossing time = " + (Time.realtimeSinceStartup - time_start));
+            print("Crossing point = " + gameObject.transform.position);
+        }
+
+    if (other.gameObject.CompareTag("ObstacleWall"))
+        {
+
+            // update and print collision #
+
+            collisionCounter++;
+            print("Collision # " + collisionCounter);
+
+            // update position
+
+            var posCol = other.gameObject.GetComponent<Collider>().bounds.size;
+            var pos = other.gameObject.transform.parent.transform.position;
+            var rot = other.gameObject.transform.parent.transform.rotation;
+            transform.position = pos;
+            transform.rotation = rot;
+            rb.velocity = new Vector3(0, 0, 0);
+
+            // update controller input
+
+            desiredPitch = 0;
+            desiredRoll = 0;
+            desiredY = pos.y - standardY;
+            desiredYaw = rot.eulerAngles.y;
+
+        }
+    }
+
 }
