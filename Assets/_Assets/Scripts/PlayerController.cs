@@ -58,6 +58,8 @@ public class PlayerController : MonoBehaviour
 
     public float standardY = 0.0f;
 
+    public float Input_factor = 0.0f;
+
     // Use this for initialization
     void Start ()
     {
@@ -144,9 +146,8 @@ public class PlayerController : MonoBehaviour
         {
             float max_m_per_s = 10;
             float max_yaw_per_s = 100;
-            float mul_factor = 20.0f;
-            desiredPitch = Input.GetAxis("Vertical") * mul_factor;
-            desiredRoll = -Input.GetAxis("Horizontal") * mul_factor;
+            desiredPitch = Input.GetAxis("Vertical") * Input_factor;
+            desiredRoll = -Input.GetAxis("Horizontal") * Input_factor;
             desiredY = desiredY + Input.GetAxis("Up") * max_m_per_s * time_diff;
             desiredYaw = desiredYaw + Input.GetAxis("Yaw") * max_yaw_per_s * time_diff;
         }

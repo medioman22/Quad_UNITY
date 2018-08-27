@@ -134,6 +134,13 @@ public class PIDController : MonoBehaviour {
         }
         else
         {
+            var time_diff = PlayCon.time_diff;
+
+            if (time_diff<0.001)
+            {
+                time_diff = 1;
+            }
+
             var measRoll = rotation.eulerAngles.z;
             var measRollVel = rb.angularVelocity.z;
             var measPitch = rotation.eulerAngles.x;
@@ -157,22 +164,22 @@ public class PIDController : MonoBehaviour {
             var YErr = desiredY - measY;
             var YErrOld = desiredYOld - measYOld;
 
-            var YVelErr = (YErr - YErrOld)/PlayCon.time_diff;
+            var YVelErr = (YErr - YErrOld)/time_diff;
 
             var RollErr = desiredRoll - measRoll;
             var RollErrOld = desiredRollOld - measRollOld;
 
-            var RollVelErr = (RollErr - RollErrOld)/PlayCon.time_diff;
+            var RollVelErr = (RollErr - RollErrOld)/time_diff;
 
             var YawErr = desiredYaw - measYaw;
             var YawErrOld = desiredYawOld - measYawOld;
 
-            var YawVelErr = (YawErr - YawErrOld)/PlayCon.time_diff;
+            var YawVelErr = (YawErr - YawErrOld)/time_diff;
 
             var PitchErr = desiredPitch - measPitch;
             var PitchErrOld = desiredPitchOld - measPitchOld;
 
-            var PitchVelErr = (PitchErr - PitchErrOld)/PlayCon.time_diff;
+            var PitchVelErr = (PitchErr - PitchErrOld)/time_diff;
     
             desiredYOld = desiredY;
             measYOld = measY;
