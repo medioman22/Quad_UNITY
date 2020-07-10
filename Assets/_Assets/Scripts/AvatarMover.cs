@@ -20,6 +20,10 @@ public class AvatarMover : MonoBehaviour
     public float time_diff = 0.0f;
     private float time_new = 0.0f;
     private float time_new_start = 0.0f;
+    
+    public float corr_roll;
+    public float corr_pitch;
+    public float corr_yaw;
 
     // Use this for initialization
     void Start()
@@ -64,7 +68,7 @@ public class AvatarMover : MonoBehaviour
 
             Vector3[] qr = new Vector3[rb.Length];
             Quaternion corr;
-            corr = Quaternion.Euler(180, 0, 0);
+            corr = Quaternion.Euler(corr_roll, corr_pitch, corr_yaw);
             //Quaternion(0, 1, 0, Mathf.Cos(Mathf.PI/4));
 
             for (int i = 0; i < rb.Length; i++)
@@ -81,12 +85,12 @@ public class AvatarMover : MonoBehaviour
                 {
                     // right to left handed pos
                     rb[i].position = new Vector3(-udp.avatar[torso + 1], udp.avatar[torso + 2], udp.avatar[torso + 3]);
-
-                    qr[i] = Vector3.Normalize(new Vector3(udp.avatar[torso + 4], udp.avatar[torso + 5], udp.avatar[torso + 6]));
+                    // CORRECTION FOR Z-UP IN MOCAP
+                    // rb[i].position = new Vector3(-udp.avatar[torso + 1], udp.avatar[torso + 3], -udp.avatar[torso + 2]);
 
 
                         // right to left handed quaternion
-                        Quaternion rot = new Quaternion(-qr[i].z, -qr[i].y, qr[i].x, udp.avatar[7]);
+                        Quaternion rot = new Quaternion(-udp.avatar[torso + 4], udp.avatar[torso + 5], udp.avatar[torso + 6], -udp.avatar[torso + 7]);
                         var fin_rot = Quaternion.identity;
                         fin_rot = rot * corr;
 
@@ -115,7 +119,9 @@ public class AvatarMover : MonoBehaviour
 
                     try
                     {
-                        rb[i].rotation = fin_rot;
+                        Debug.Log(fin_rot);
+                        Debug.Log(fin_rot.normalized);
+                        rb[i].rotation = fin_rot.normalized;
                     }
                         catch (Exception e)
                     {
