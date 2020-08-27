@@ -5,6 +5,7 @@ using System.Linq;
 
 
 
+
 public class AvatarMover : MonoBehaviour
 {
     public bool DebugMode = false;
@@ -24,6 +25,8 @@ public class AvatarMover : MonoBehaviour
     public float corr_roll;
     public float corr_pitch;
     public float corr_yaw;
+
+    public string SubjectFolder = "";
 
     // Use this for initialization
     void Start()
@@ -48,6 +51,33 @@ public class AvatarMover : MonoBehaviour
                 Debug.LogWarning("Missing UDPSend component. Please add one");
             }
         }
+        // string command = "python /Users/lis/Documents/github/HRI_mapping/src/avatar/avatar_communication.py " + SubjectFolder;
+
+        // System.Diagnostics.Process otherProcess = new System.Diagnostics.Process();
+        string command = "python /Users/lis/Documents/github/HRI_mapping/src/avatar/avatar_communication.py";// + SubjectFolder;
+        try
+        {
+            UnityEngine.Debug.Log("============== Start Executing [" + command + "] ===============");
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo()
+            {
+                FileName = command,
+                UseShellExecute = true,
+                CreateNoWindow = false,
+                // Arguments = SubjectFolder
+            };
+            System.Diagnostics.Process myProcess = new System.Diagnostics.Process
+            {
+                StartInfo = startInfo
+            };
+            myProcess.Start();
+            // myProcess.WaitForExit();
+            UnityEngine.Debug.Log("============== End ===============");;
+        }
+        catch (Exception e)
+        {
+            print(e);
+        }
+
     }
 
     // FixedUpdate is called right before Update
@@ -70,6 +100,9 @@ public class AvatarMover : MonoBehaviour
             Quaternion corr;
             corr = Quaternion.Euler(corr_roll, corr_pitch, corr_yaw);
             //Quaternion(0, 1, 0, Mathf.Cos(Mathf.PI/4));
+
+            Quaternion torso_rot = Quaternion.identity;
+            Quaternion arm_rot = Quaternion.identity;
 
             for (int i = 0; i < rb.Length; i++)
             {
@@ -119,8 +152,6 @@ public class AvatarMover : MonoBehaviour
 
                     try
                     {
-                        Debug.Log(fin_rot);
-                        Debug.Log(fin_rot.normalized);
                         rb[i].rotation = fin_rot.normalized;
                     }
                         catch (Exception e)
@@ -128,12 +159,24 @@ public class AvatarMover : MonoBehaviour
                         //Debug.LogException(e, this);
                        print("waiting for stable skeleton data");
                     }
+
+                    if (i == 2)
+                    {
+                        torso_rot = fin_rot.normalized;
+                    }
+                    if (i == 6)
+                    {
+                        arm_rot = fin_rot.normalized;
+                    }
                 }
             }
+            // Debug.Log(arm_rot.ToEulerAngles() * 60 );
+            Debug.Log("TORSO ROTATION (Q)= " + torso_rot);
+            Debug.Log("TORSO ROTATION = " + torso_rot.ToEulerAngles() * 180 / Mathf.PI);
+            // Debug.Log(arm_rot.ToEulerAngles() * 60 - torso_rot.ToEulerAngles() * 60);
         }
 
-
-        Debug.Log(time_diff);
+        // Debug.Log(time_diff);
     }
 
     // Update is called once per frame
