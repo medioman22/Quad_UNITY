@@ -2,8 +2,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Linq;
-
-
+using System.IO;
+using System.Diagnostics;
 
 
 public class AvatarMover : MonoBehaviour
@@ -28,7 +28,41 @@ public class AvatarMover : MonoBehaviour
 
     public string SubjectFolder = "";
 
-    // Use this for initialization
+
+    Process process = null;
+    StreamWriter messageStream;
+
+    // [MenuItem("MyGame/Downscale Reference Textures")]
+    public static void DownscaleRefTextures()
+    {
+        try
+        {
+            // using System.Diagnostics;
+            Process p = new Process();
+            p.StartInfo.FileName = "python";
+            p.StartInfo.Arguments = "avatar_communication.py";
+            // Pipe the output to itself - we will catch this later
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.CreateNoWindow = true;
+
+            // Where the script lives
+            p.StartInfo.WorkingDirectory = "/Users/lis/Documents/github/HRI_mapping/src/avatar/";
+            p.StartInfo.UseShellExecute = false;
+
+            p.Start();
+            // Read the output - this will show is a single entry in the console - you could get  fancy and make it log for each line - but thats not why we're here
+            UnityEngine.Debug.Log(p.StandardOutput.ReadToEnd());
+            // p.WaitForExit();
+            // p.Close();
+        }
+        catch (Exception e)
+        {
+            //UnityEngine.Debug.LogException(e, this);
+            UnityEngine.Debug.Log(e);
+        }
+    }
+
     void Start()
     {
         time_start = Time.realtimeSinceStartup;
@@ -48,35 +82,13 @@ public class AvatarMover : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Missing UDPSend component. Please add one");
+                UnityEngine.Debug.LogWarning("Missing UDPSend component. Please add one");
             }
         }
         // string command = "python /Users/lis/Documents/github/HRI_mapping/src/avatar/avatar_communication.py " + SubjectFolder;
 
         // System.Diagnostics.Process otherProcess = new System.Diagnostics.Process();
-        string command = "python /Users/lis/Documents/github/HRI_mapping/src/avatar/avatar_communication.py";// + SubjectFolder;
-        try
-        {
-            UnityEngine.Debug.Log("============== Start Executing [" + command + "] ===============");
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo()
-            {
-                FileName = command,
-                UseShellExecute = true,
-                CreateNoWindow = false,
-                // Arguments = SubjectFolder
-            };
-            System.Diagnostics.Process myProcess = new System.Diagnostics.Process
-            {
-                StartInfo = startInfo
-            };
-            myProcess.Start();
-            // myProcess.WaitForExit();
-            UnityEngine.Debug.Log("============== End ===============");;
-        }
-        catch (Exception e)
-        {
-            print(e);
-        }
+        DownscaleRefTextures();
 
     }
 
@@ -91,7 +103,7 @@ public class AvatarMover : MonoBehaviour
 
         if (DataFromUDP)
         {
-            Debug.LogWarning("UDP?");
+            UnityEngine.Debug.LogWarning("UDP?");
             var avatar = udp.avatar;
 
             Rigidbody[] rb = gameObject.GetComponentsInChildren<Rigidbody>();
@@ -130,24 +142,24 @@ public class AvatarMover : MonoBehaviour
                     if (DebugMode)
                     {
 
-                        Debug.Log(" ");
-                        Debug.Log("----- START PlayerController DEBUG -----");
-                        Debug.Log(" ");
+                        UnityEngine.Debug.Log(" ");
+                        UnityEngine.Debug.Log("----- START PlayerController UnityEngine.Debug -----");
+                        UnityEngine.Debug.Log(" ");
 
-                        Debug.Log(i);
-                        Debug.Log(" ");
-                        Debug.Log(qr[i].magnitude);
-                        Debug.Log("pos = " + udp.avatar[torso + 1] +
+                        UnityEngine.Debug.Log(i);
+                        UnityEngine.Debug.Log(" ");
+                        UnityEngine.Debug.Log(qr[i].magnitude);
+                        UnityEngine.Debug.Log("pos = " + udp.avatar[torso + 1] +
                               " " + udp.avatar[torso + 2] +
                               " " + udp.avatar[torso + 3]);
 
-                        Debug.Log("rot quat = " + rb[i].rotation.x +
+                        UnityEngine.Debug.Log("rot quat = " + rb[i].rotation.x +
                               " " + rb[i].rotation.y +
                               " " + rb[i].rotation.z +
                               " " + rb[i].rotation.w);
 
                         print(" ");
-                        Debug.Log("n = " + udp.avatar[udp.avatar.Length - 1]);
+                        UnityEngine.Debug.Log("n = " + udp.avatar[udp.avatar.Length - 1]);
                     }
 
                     try
@@ -156,7 +168,7 @@ public class AvatarMover : MonoBehaviour
                     }
                         catch (Exception e)
                     {
-                        //Debug.LogException(e, this);
+                        //UnityEngine.Debug.LogException(e, this);
                        print("waiting for stable skeleton data");
                     }
 
@@ -170,13 +182,13 @@ public class AvatarMover : MonoBehaviour
                     }
                 }
             }
-            // Debug.Log(arm_rot.ToEulerAngles() * 60 );
-            Debug.Log("TORSO ROTATION (Q)= " + torso_rot);
-            Debug.Log("TORSO ROTATION = " + torso_rot.ToEulerAngles() * 180 / Mathf.PI);
-            // Debug.Log(arm_rot.ToEulerAngles() * 60 - torso_rot.ToEulerAngles() * 60);
+            // UnityEngine.Debug.Log(arm_rot.ToEulerAngles() * 60 );
+            UnityEngine.Debug.Log("TORSO ROTATION (Q)= " + torso_rot);
+            UnityEngine.Debug.Log("TORSO ROTATION = " + torso_rot.ToEulerAngles() * 180 / Mathf.PI);
+            // UnityEngine.Debug.Log(arm_rot.ToEulerAngles() * 60 - torso_rot.ToEulerAngles() * 60);
         }
 
-        // Debug.Log(time_diff);
+        // UnityEngine.Debug.Log(time_diff);
     }
 
     // Update is called once per frame
