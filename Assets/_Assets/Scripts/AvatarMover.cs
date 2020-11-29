@@ -8,14 +8,28 @@ using System.Diagnostics;
 
 public class AvatarMover : MonoBehaviour
 {
+    public int SubjectNumber = 1;
+    public bool ResetPosition = false;
+    public Vector3 ZeroPosition = new Vector3(0.0f, 1.0f, 0.0f);
+    private Vector3 pos_diff = new Vector3(0.0f, 1.0f, 0.0f);
+
+    public bool HeadStraight = false;
+
+    public Vector3 neckDist = new Vector3(0.0f,0.23f,0.0f);
+    public Vector3 headDist = new Vector3(0.0f,0.13f,0.0f);
+    
+    public bool HandsStraight = false;
+
+    public Vector3 handDist = new Vector3(0.25f,0.0f,0.0f);
+
+    private int gap = 0;
+
     public bool DebugMode = false;
 
-    private UDPCommunication udp;
+    private CSVPlotter csv;
 
     private Rigidbody rb;
     //private 
-
-    public static bool DataFromUDP = true;
 
     private float time_start = 0.0f;
     public float time_diff = 0.0f;
@@ -27,6 +41,8 @@ public class AvatarMover : MonoBehaviour
     public float corr_yaw;
 
     public string SubjectFolder = "";
+
+    private int count = 0;
 
 
     Process process = null;
@@ -65,6 +81,7 @@ public class AvatarMover : MonoBehaviour
 
     void Start()
     {
+        
         time_start = Time.realtimeSinceStartup;
         time_new_start = Time.realtimeSinceStartup;
 
@@ -72,128 +89,121 @@ public class AvatarMover : MonoBehaviour
 
         rb = GetComponent<Rigidbody>();
 
-        // Connect UDP
-
-        if (DataFromUDP)
-        {
-            if ((udp == null) && (GameObject.Find("GameController").gameObject.GetComponent<UDPCommunication>() != null))
-            {
-                udp = GameObject.Find("GameController").gameObject.GetComponent<UDPCommunication>();
-            }
-            else
-            {
-                UnityEngine.Debug.LogWarning("Missing UDPSend component. Please add one");
-            }
-        }
-        // string command = "python /Users/lis/Documents/github/HRI_mapping/src/avatar/avatar_communication.py " + SubjectFolder;
-
         // System.Diagnostics.Process otherProcess = new System.Diagnostics.Process();
         DownscaleRefTextures();
+
+        csv = gameObject.GetComponent<CSVPlotter>();
 
     }
 
     // FixedUpdate is called right before Update
-    void FixedUpdate()
+    void Update()
     {
+
+        gap = (SubjectNumber-1)*13*8;
+        
         time_new = Time.realtimeSinceStartup;
 
         time_diff = time_new - time_new_start;
 
         time_new_start = Time.realtimeSinceStartup;
 
-        if (DataFromUDP)
+        var avatar = csv.pose;
+
+        Rigidbody[] rb = gameObject.GetComponentsInChildren<Rigidbody>();
+
+        Vector3[] qr = new Vector3[rb.Length];
+        Quaternion corr;
+        corr = Quaternion.Euler(corr_roll, corr_pitch, corr_yaw);
+        //Quaternion(0, 1, 0, Mathf.Cos(Mathf.PI/4));
+
+        Quaternion torso_rot = Quaternion.identity;
+        Quaternion arm_rot = Quaternion.identity;
+
+        if (avatar.Length>0)
         {
-            UnityEngine.Debug.LogWarning("UDP?");
-            var avatar = udp.avatar;
-
-            Rigidbody[] rb = gameObject.GetComponentsInChildren<Rigidbody>();
-
-            Vector3[] qr = new Vector3[rb.Length];
-            Quaternion corr;
-            corr = Quaternion.Euler(corr_roll, corr_pitch, corr_yaw);
-            //Quaternion(0, 1, 0, Mathf.Cos(Mathf.PI/4));
-
-            Quaternion torso_rot = Quaternion.identity;
-            Quaternion arm_rot = Quaternion.identity;
-
             for (int i = 0; i < rb.Length; i++)
-            {
-
-                int torso = 8 * i;
-
-                if (udp.avatar[3] == 0 && udp.avatar[4] == 0 && udp.avatar[5] == 0 && udp.avatar[6] == 0)
-                //print("waiting for stable skeleton data");
                 {
-                    var a = 1;
+
+                int torso = gap + 8 * i;
+
+                count += 1;
+                
+                // right to left handed pos
+                rb[i].position = new Vector3(-avatar[torso + 1], avatar[torso + 2], avatar[torso + 3]);
+                // CORRECTION FOR Z-UP IN MOCAP
+                // rb[i].position = new Vector3(-udp.avatar[torso + 1], udp.avatar[torso + 3], -udp.avatar[torso + 2]);
+
+                if (i==0)
+                {
+                    pos_diff = ZeroPosition - rb[0].position;
                 }
-                else
+
+                if (ResetPosition)
                 {
-                    // right to left handed pos
-                    rb[i].position = new Vector3(-udp.avatar[torso + 1], udp.avatar[torso + 2], udp.avatar[torso + 3]);
-                    // CORRECTION FOR Z-UP IN MOCAP
-                    // rb[i].position = new Vector3(-udp.avatar[torso + 1], udp.avatar[torso + 3], -udp.avatar[torso + 2]);
-
-
-                        // right to left handed quaternion
-                        Quaternion rot = new Quaternion(-udp.avatar[torso + 4], udp.avatar[torso + 5], udp.avatar[torso + 6], -udp.avatar[torso + 7]);
-                        var fin_rot = Quaternion.identity;
-                        fin_rot = rot * corr;
-
-                    if (DebugMode)
+                    rb[i].position = rb[i].position + pos_diff;
+                    if(count==1)
                     {
+                        transform.Rotate(Quaternion.Inverse(rb[0].rotation).eulerAngles);
+                    }
+                }
 
-                        UnityEngine.Debug.Log(" ");
-                        UnityEngine.Debug.Log("----- START PlayerController UnityEngine.Debug -----");
-                        UnityEngine.Debug.Log(" ");
 
-                        UnityEngine.Debug.Log(i);
-                        UnityEngine.Debug.Log(" ");
-                        UnityEngine.Debug.Log(qr[i].magnitude);
-                        UnityEngine.Debug.Log("pos = " + udp.avatar[torso + 1] +
-                              " " + udp.avatar[torso + 2] +
-                              " " + udp.avatar[torso + 3]);
+                // right to left handed quaternion
+                Quaternion rot = new Quaternion(-avatar[torso + 4],avatar[torso + 5], avatar[torso + 6], -avatar[torso + 7]);
+                var fin_rot = Quaternion.identity;
+                fin_rot = rot * corr;
 
-                        UnityEngine.Debug.Log("rot quat = " + rb[i].rotation.x +
-                              " " + rb[i].rotation.y +
-                              " " + rb[i].rotation.z +
-                              " " + rb[i].rotation.w);
+                try
+                {
+                    rb[i].rotation = fin_rot.normalized;
+                }
+                    catch (Exception e)
+                {
+                    print("waiting for stable skeleton data");
+                }
 
-                        print(" ");
-                        UnityEngine.Debug.Log("n = " + udp.avatar[udp.avatar.Length - 1]);
+
+                if (HeadStraight)
+                {
+                    if (i==3)
+                    {
+                        rb[i].rotation = rb[2].rotation;
+                        rb[i].position = rb[2].position +  rb[2].rotation * neckDist;
+                    }
+                    if (i==4)
+                    {
+                        rb[i].rotation = rb[2].rotation;
+                        rb[i].position = rb[2].position +  rb[2].rotation * (neckDist + headDist);
                     }
 
-                    try
+                }
+
+
+                if (HandsStraight)
+                {
+                    if (i==8)
                     {
-                        rb[i].rotation = fin_rot.normalized;
+                        rb[i].rotation = rb[7].rotation;
+                        rb[i].position = rb[7].position - rb[7].rotation * handDist;
                     }
-                        catch (Exception e)
+                    if (i==12)
                     {
-                        //UnityEngine.Debug.LogException(e, this);
-                       print("waiting for stable skeleton data");
+                        rb[i].rotation = rb[11].rotation;
+                        rb[i].position = rb[11].position + rb[11].rotation * handDist;
                     }
 
-                    if (i == 2)
-                    {
-                        torso_rot = fin_rot.normalized;
-                    }
-                    if (i == 6)
-                    {
-                        arm_rot = fin_rot.normalized;
-                    }
                 }
             }
-            // UnityEngine.Debug.Log(arm_rot.ToEulerAngles() * 60 );
-            UnityEngine.Debug.Log("TORSO ROTATION (Q)= " + torso_rot);
-            UnityEngine.Debug.Log("TORSO ROTATION = " + torso_rot.ToEulerAngles() * 180 / Mathf.PI);
-            // UnityEngine.Debug.Log(arm_rot.ToEulerAngles() * 60 - torso_rot.ToEulerAngles() * 60);
+            // UnityEngine.Debug.Log("TORSO ROTATION (Q)= " + torso_rot);
+            // UnityEngine.Debug.Log("TORSO ROTATION = " + torso_rot.ToEulerAngles() * 180 / Mathf.PI);
         }
 
-        // UnityEngine.Debug.Log(time_diff);
     }
 
     // Update is called once per frame
-    void Update()
-    {
-    }
+    // void Update()
+    // {
+    // }
 
 }
