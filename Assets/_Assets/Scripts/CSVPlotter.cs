@@ -5,8 +5,10 @@ using System.IO;
 using System;
 
 public class CSVPlotter : MonoBehaviour {
-  
+
+    public string foldername;
     public string filename;
+    public bool isReconstructed;
     public int first = 0;
     public int last = 10000;
     public int downs = 100;
@@ -26,7 +28,7 @@ public class CSVPlotter : MonoBehaviour {
         {    
         sub = new GameObject();
 
-        strReader = new StreamReader(filename);
+        strReader = new StreamReader(System.IO.Path.Combine(foldername, filename));
         endOfFile = false;
         count = 0;
 
@@ -56,7 +58,7 @@ public class CSVPlotter : MonoBehaviour {
         if (data_String == null)
         {
             endOfFile = true;
-            strReader = new StreamReader(filename);
+            strReader = new StreamReader(System.IO.Path.Combine(foldername, filename));
             count = 0;
             data_String = strReader.ReadLine();
             data_String = strReader.ReadLine();
@@ -71,7 +73,14 @@ public class CSVPlotter : MonoBehaviour {
 
             pose_list.AddRange(pose);
 
-            euler = pose_list.GetRange(pose_list.Count - 30, 27);
+            if (isReconstructed)
+            {
+                euler = pose_list.GetRange(pose_list.Count - 27, 27);
+            }
+            else
+            {
+                euler = pose_list.GetRange(pose_list.Count - 30, 27);
+            }
         }
     }
 }

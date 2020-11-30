@@ -17,28 +17,14 @@ public class AvatarMoverClean : MonoBehaviour
     public List<int> limb_order = new List<int>(new int[] { 3, 6, 7, 8, 9, 10, 11, 12, 13 });
     public Quaternion[] rot_init = new Quaternion[13];
 
-    public int SubjectNumber = 1;
-    public bool ResetPosition = false;
+    public bool ResetPosition = true;
     public Vector3 ZeroPosition = new Vector3(0.0f, 1.0f, 0.0f);
     private Vector3 pos_diff = new Vector3(0.0f, 1.0f, 0.0f);
-
-    public bool HeadStraight = false;
-
-    public Vector3 neckDist = new Vector3(0.0f,0.23f,0.0f);
-    public Vector3 headDist = new Vector3(0.0f,0.13f,0.0f);
-    
-    public bool HandsStraight = false;
-
-    public Vector3 handDist = new Vector3(0.25f,0.0f,0.0f);
-
     private int gap = 0;
-
-    public bool DebugMode = false;
-
     private CSVPlotter csv;
     private CSVPlotterFirst csvF;
+    
     //private 
-
     private float time_start = 0.0f;
     public float time_diff = 0.0f;
     private float time_new = 0.0f;
@@ -69,7 +55,7 @@ public class AvatarMoverClean : MonoBehaviour
     }
 
     // FixedUpdate is called right before Update
-    void Update()
+    void LateUpdate()
     {
 
         time_new = Time.realtimeSinceStartup;
@@ -94,7 +80,7 @@ public class AvatarMoverClean : MonoBehaviour
                 Quaternion rot = Quaternion.Euler(avatar[gap + 1], -avatar[gap + 2], -avatar[gap]);
                 // Quaternion rot = new Quaternion(-avatar[torso + 4],avatar[torso + 5], avatar[torso + 6], -avatar[torso + 7]);
                 var fin_rot = rot_init[i];
-                fin_rot = rot * rot_init[limb_order[i] - 1];
+                fin_rot =  rot_init[limb_order[i] - 1] * rot;
 
                 try
                 {
@@ -105,21 +91,6 @@ public class AvatarMoverClean : MonoBehaviour
                 {
                     print("waiting for stable skeleton data");
                 }
-
-                // if (HandsStraight)
-                // {
-                //     if (i==8)
-                //     {
-                //         rb[i].rotation = rb[7].rotation;
-                //         rb[i].position = rb[7].position - rb[7].rotation * handDist;
-                //     }
-                //     if (i==12)
-                //     {
-                //         rb[i].rotation = rb[11].rotation;
-                //         rb[i].position = rb[11].position + rb[11].rotation * handDist;
-                //     }
-
-                // }
             }
         }
 
@@ -152,11 +123,7 @@ public class AvatarMoverClean : MonoBehaviour
 
                     if (ResetPosition)
                     {
-                        rb[i].position = rb[i].position + pos_diff;
-                        if (count == 1)
-                        {
-                            transform.Rotate(Quaternion.Inverse(rb[0].rotation).eulerAngles);
-                        }
+                        rb[i].position = rb[i].position + ZeroPosition;
                     }
 
 
@@ -184,7 +151,10 @@ public class AvatarMoverClean : MonoBehaviour
                     {
                         print("waiting for stable skeleton data");
                     }
+
+
                 }
         }
+        // UnityEngine.Debug.Break();
     }
 }

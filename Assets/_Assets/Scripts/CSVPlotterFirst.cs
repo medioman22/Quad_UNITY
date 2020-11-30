@@ -13,7 +13,7 @@ public class CSVPlotterFirst : MonoBehaviour {
     private string data_String;
     private StreamReader strReader;
     
-    private void Start() 
+    private void Awake() 
         {    
         sub = new GameObject();
 
