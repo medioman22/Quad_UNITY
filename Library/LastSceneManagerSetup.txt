@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Avatar_new.unity
+- path: Assets/Avatar_new_FWS.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
